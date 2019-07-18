@@ -1,0 +1,5 @@
+graphviz==0.4.10
+regex==2019.5.25
+SuffixTree==0.7
+unicodeManager==0.1
+Unidecode==1.0.23

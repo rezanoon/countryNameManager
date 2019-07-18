@@ -16,7 +16,6 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
-import timing
 from time import clock
 from unidecode import unidecode
 import re
@@ -75,7 +74,7 @@ class CountryGuesser:
         }
         
         # Loading data
-        print "Loading data"
+        # print "Loading data"
         ##timing.log(clock())
         
         self.USAStates = USAStates()
@@ -86,7 +85,7 @@ class CountryGuesser:
         self.PostCodes = PostCodes()
         
         # Store the city names also as a suffix tree
-        print 'Creating suffix trees for city names'
+        # print 'Creating suffix trees for city names'
         ##timing.log(clock())
         
         # 1) Large cities
@@ -98,7 +97,7 @@ class CountryGuesser:
         for city in self.WorldCities.city2countryPopulation.iterkeys():
             self.stdWorldCitiesAll[city] = city
 
-        print 'Done initialising'
+        # print 'Done initialising'
         #timing.log(clock())
         
     
@@ -381,7 +380,7 @@ class CountryGuesser:
                 if len(countries) == 1:
                     return sorted(countries)
             
-            print location_norm, '--', results, '--', counter
+            # print location_norm, '--', results, '--', counter
             
         return [None]
         
@@ -396,22 +395,26 @@ if __name__=="__main__":
     writer = UnicodeWriter(g)
     
     cg = CountryGuesser()
-    
+    counter = 1
     succ = 0
     fail = 0
-    
     f = open(os.path.join(os.path.abspath('.'), 'data', 'sample.csv'), 'rb')
     reader = UnicodeReader(f)
     for row in reader:
-        location = row[0]
+        if counter % 10000 == 0:
+            print counter
+        try:
+            location = row[1]
+        except:
+            continue
         location_norm = unidecode(location).lower().strip()
         country = cg.guess(location)
         if country[0] is None:
             fail += 1
         else:
             succ += 1
-        writer.writerow([location] + country)
-
+        writer.writerow([row[0]]  + [location.replace(";", ",")] + [country[0]])
+        counter += 1
     print succ, 'resolved'
     print fail, 'not resolved'
     
